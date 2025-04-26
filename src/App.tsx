@@ -7,8 +7,6 @@ import IncomingItems from './pages/IncomingItems';
 import OutgoingItems from './pages/OutgoingItems';
 import Contractors from './pages/Contractors';
 import Overseers from './pages/Overseers';
-import Register from './pages/Register';
-import Login from './pages/Login';
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = !!localStorage.getItem('authToken');
@@ -20,8 +18,6 @@ function App() {
     <Router>
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <Routes>
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
           <Route
             path="/"
             element={
