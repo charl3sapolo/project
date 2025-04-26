@@ -1,8 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Search, MoreVertical, Store } from 'lucide-react';
-import { currentStore, inventoryItems } from '../data/mockData';
+import { currentStore } from '../data/mockData'; // Still using currentStore from mockData
+
+interface InventoryItem {
+  id: string;
+  name: string;
+  category: string;
+  quantity: number;
+  buyPrice: number;
+  sellPrice: number;
+  imageUrl?: string;
+}
 
 const Inventory: React.FC = () => {
+  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        const response = await fetch('https://construction.contactmanagers.xyz/docs/inventory');
+        if (!response.ok) {
+          throw new Error('Failed to fetch inventory');
+        }
+        const data = await response.json();
+        setInventoryItems(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInventory();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-blue-500 text-white p-4">
@@ -29,40 +62,49 @@ const Inventory: React.FC = () => {
       </header>
 
       <div className="bg-blue-500 text-white px-4 py-2 flex justify-between">
-        <div>QTY: {inventoryItems.reduce((sum, item) => sum + item.quantity, 0).toFixed(2)}</div>
         <div>
-          TOTAL: ${inventoryItems.reduce((sum, item) => sum + item.buyPrice, 0).toFixed(2)}/
-          ${inventoryItems.reduce((sum, item) => sum + item.sellPrice, 0).toFixed(2)}
+          QTY: {inventoryItems.reduce((sum, item) => sum + item.quantity, 0).toFixed(2)}
+        </div>
+        <div>
+          TOTAL: $
+          {inventoryItems.reduce((sum, item) => sum + item.buyPrice, 0).toFixed(2)}/$
+          {inventoryItems.reduce((sum, item) => sum + item.sellPrice, 0).toFixed(2)}
         </div>
       </div>
 
       <main className="flex-1 p-4">
-        {inventoryItems.map(item => (
-          <div key={item.id} className="bg-white rounded-lg shadow-sm mb-3">
-            <div className="flex items-center p-4">
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mr-4">
-                <img
-                  src="https://via.placeholder.com/48"
-                  alt={item.name}
-                  className="w-8 h-8 object-cover rounded"
-                />
+        {loading ? (
+          <div className="text-center text-gray-500">Loading...</div>
+        ) : error ? (
+          <div className="text-center text-red-500">{error}</div>
+        ) : (
+          inventoryItems.map(item => (
+            <div key={item.id} className="bg-white rounded-lg shadow-sm mb-3">
+              <div className="flex items-center p-4">
+                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mr-4">
+                  <img
+                    src={item.imageUrl || "https://via.placeholder.com/48"}
+                    alt={item.name}
+                    className="w-8 h-8 object-cover rounded"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
+                  <p className="text-gray-500">{item.category || 'Uncategorized'}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xl font-bold">{item.quantity.toFixed(2)}</p>
+                  <p className="text-gray-500">
+                    ${item.buyPrice.toFixed(2)}/${item.sellPrice.toFixed(2)}
+                  </p>
+                </div>
+                <button className="ml-4 p-2">
+                  <MoreVertical size={20} className="text-gray-400" />
+                </button>
               </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
-                <p className="text-gray-500">{item.category}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-xl font-bold">{item.quantity.toFixed(2)}</p>
-                <p className="text-gray-500">
-                  ${item.buyPrice.toFixed(2)}/${item.sellPrice.toFixed(2)}
-                </p>
-              </div>
-              <button className="ml-4 p-2">
-                <MoreVertical size={20} className="text-gray-400" />
-              </button>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </main>
 
       <footer className="bg-white border-t fixed bottom-0 w-full">
