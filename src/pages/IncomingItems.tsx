@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Search, MoreVertical, Barcode, ChevronRight, ArrowUp } from 'lucide-react';
+import { ArrowLeft, Search, MoreVertical, Barcode } from 'lucide-react';
 import { incomingItems } from '../data/mockData';
 
 interface InventoryItem {
@@ -50,8 +50,7 @@ const IncomingItems: React.FC = () => {
         throw new Error('Failed to submit inventory item');
       }
 
-      // We don't need to store the result, just show success
-      await response.json(); // Still parse to ensure valid JSON
+      await response.json();
       alert('Item added successfully!');
       setFormData({
         name: '',
@@ -104,57 +103,6 @@ const IncomingItems: React.FC = () => {
       </div>
 
       <main className="flex-1 p-4">
-        <div className="bg-blue-100 rounded-lg p-4 mb-4">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="text-lg font-semibold">Document Properties</h2>
-            <div className="flex items-center">
-              <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm mr-2">
-                PAID
-              </span>
-              <button className="bg-blue-500 text-white p-2 rounded-full">
-                <ArrowUp size={20} />
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Document's date</label>
-              <input
-                type="text"
-                value={currentItem.date}
-                readOnly
-                className="w-full p-2 rounded-lg bg-white"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Document No</label>
-              <input
-                type="text"
-                value={currentItem.documentNo}
-                readOnly
-                className="w-full p-2 rounded-lg bg-white"
-              />
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Supplier</label>
-            <button className="w-full p-2 rounded-lg bg-white flex justify-between items-center">
-              <span className="text-gray-400">Select supplier</span>
-              <ChevronRight size={20} />
-            </button>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Comment</label>
-            <textarea
-              className="w-full p-2 rounded-lg bg-white h-24 resize-none"
-              placeholder="Add a comment..."
-            />
-          </div>
-        </div>
-
         <form onSubmit={handleSubmit} className="bg-white rounded-lg p-4 mb-4 shadow">
           <h2 className="text-lg font-semibold mb-4">Add New Inventory Item</h2>
           
